@@ -1,0 +1,59 @@
+# Entornos virtuales de Python
+venv/
+env/
+ENV/
+.env/
+virtualenv/
+venv*/
+env.py
+env.bak/
+
+# Archivos de base de datos de Django
+*.sqlite3
+*.db
+
+# Archivos compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Entornos de desarrollo
+.python-version
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Archivos de entorno
+.env
+.env.local
+.env.production
+.env.test
+
+# Archivos de Django
+migrations/
+!migrations/__init__.py
+
+# Archivos estáticos y media (pueden generarse)
+/staticfiles/
+/media/
+
+# Logs
+*.log
+logs/
+
+# Archivos de sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archivos de coverage de pruebas
+htmlcov/
+.coverage
+.coverage.*
