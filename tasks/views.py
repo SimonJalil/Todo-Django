@@ -6,6 +6,8 @@ from django.db import IntegrityError
 from .forms import TaskForm
 
 # Create your views here.
+
+
 def home(request):
     return render(request, 'home.html')
 
@@ -60,17 +62,19 @@ def signin(request):
 
         return render(request, 'signin.html', context)
     else:
-        user = authenticate(request, username = request.POST['username'], password = request.POST['password'])
+        user = authenticate(
+            request, username=request.POST['username'], password=request.POST['password'])
 
         if user is None:
             context = {
-                'form': AuthenticationForm(), 
+                'form': AuthenticationForm(),
                 'error': "Username or password is incorrect"
             }
             return render(request, 'signin.html', context)
         else:
             login(request, user)
             return redirect('tasks')
+
 
 def create_task(request):
     if request.method == 'GET':
@@ -80,9 +84,11 @@ def create_task(request):
 
         return render(request, 'create_task.html', context)
     else:
-        print(request.POST)
-        context = {
-            'form': TaskForm()
-        }
-
-        return render(request, 'create_task.html', context)
+        try:
+            form = TaskForm(request.POST)
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html', {'form': TaskForm(), 'error': 'Please provide valid data'})
