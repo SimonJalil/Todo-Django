@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Task Detail</h1>
+<h1>{{task.title}}</h1>
 
-<p>
-    {% if task.important %}
-        <strong>{{task.title}}</strong>
-    {% else %}
-        {{task.title}}
-    {% endif %}
-</p>
-<p>{{task.description}}</p>
-<p>Created by: {{task.user.username}}</p>
+{{error}}
+
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button>Save</button>
+</form>
+
 
 {% endblock %}

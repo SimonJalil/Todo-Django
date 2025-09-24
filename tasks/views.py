@@ -56,11 +56,28 @@ def tasks(request):
     return render(request, 'tasks.html', context)
 
 def task_detail(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
-    context = {
-        'task': task
-    }
-    return render(request, 'task_detail.html', context)
+    if request.method == 'GET':
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
+        form = TaskForm(instance=task)
+
+        context = {
+            'task': task,
+            'form': form
+        }
+        return render(request, 'task_detail.html', context)
+    else:
+        try:
+            task = get_object_or_404(Task, pk=task_id, user=request.user)
+            form = TaskForm(request.POST, instance=task)
+            form.save()
+            return redirect('tasks')
+        except ValueError:
+            context = {
+                'task': task,
+                'form': form,
+                'error': 'Error updating task'
+            }
+            return render(request, 'task_detail.html', context)
 
 def signout(request):
     logout(request)
