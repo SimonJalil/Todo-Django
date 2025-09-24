@@ -11,9 +11,10 @@
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/tasks/">Tasks</a></li>
-      
+            
             {% if user.is_authenticated %}
+            <li><a href="/tasks/">Tasks</a></li>
+            <li><a href="/create-task/">Create Task</a></li>
             <li><a href="/logout/">Logout</a></li>
             {% else %}
             <li><a href="/signup/">Signup</a></li>

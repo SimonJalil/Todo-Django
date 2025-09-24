@@ -6,17 +6,19 @@
 
 <ul>
     {% for task in tasks %}
-        <li>
+    <li>
+        <a href="{% url 'task-detail' task.id %}">
             {% if task.important %}
-                <strong>{{task.title}}</strong>
+            <strong>{{task.title}}</strong>
             {% else %}
-                {{task.title}}
+            {{task.title}}
             {% endif %}
-            <p>{{task.description}}</p>
-            <p>{{task.user.username}}</p>
-        </li>
+        </a>
+        <p>{{task.description}}</p>
+        <p>{{task.user.username}}</p>
+    </li>
     {% empty %}
-        <li>No tasks available.</li>
+    <li>No tasks available.</li>
     {% endfor %}
 </ul>
 

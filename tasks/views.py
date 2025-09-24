@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from .forms import TaskForm
 from .models import Task
+
 
 # Create your views here.
 
@@ -54,6 +55,12 @@ def tasks(request):
 
     return render(request, 'tasks.html', context)
 
+def task_detail(request, task_id):
+    task = get_object_or_404(Task, pk=task_id)
+    context = {
+        'task': task
+    }
+    return render(request, 'task_detail.html', context)
 
 def signout(request):
     logout(request)
