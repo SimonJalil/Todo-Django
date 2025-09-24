@@ -47,7 +47,7 @@ def signup(request):
 
         return render(request, 'signup.html', context)
 
-
+@login_required
 def tasks(request):
     tasks = Task.objects.filter(user=request.user, date_completed__isnull=True)
     context = {
@@ -56,6 +56,7 @@ def tasks(request):
 
     return render(request, 'tasks.html', context)
 
+@login_required
 def tasks_completed(request):
     tasks = Task.objects.filter(user=request.user, date_completed__isnull=False).order_by('-date_completed')
     context = {
@@ -64,7 +65,7 @@ def tasks_completed(request):
 
     return render(request, 'tasks.html', context)
 
-
+@login_required
 def task_detail(request, task_id):
     if request.method == 'GET':
         task = get_object_or_404(Task, pk=task_id, user=request.user)
@@ -89,23 +90,25 @@ def task_detail(request, task_id):
             }
             return render(request, 'task_detail.html', context)
 
+@login_required
 def complete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
         task.date_completed = timezone.now()
         task.save()
         return redirect('tasks')
-    
+
+@login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
         task.delete()
         return redirect('tasks')
 
+@login_required
 def signout(request):
     logout(request)
     return redirect('home')
-
 
 def signin(request):
     if request.method == 'GET':
@@ -128,7 +131,7 @@ def signin(request):
             login(request, user)
             return redirect('tasks')
 
-
+@login_required
 def create_task(request):
     if request.method == 'GET':
         context = {
