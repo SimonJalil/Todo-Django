@@ -16,6 +16,9 @@
         </a>
         <p>{{task.description}}</p>
         <p>{{task.user.username}}</p>
+
+        <p>{{task.date_completed|date:'M j Y:i'}}</p>
+
     </li>
     {% empty %}
     <li>No tasks available.</li>

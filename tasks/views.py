@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from .forms import TaskForm
 from .models import Task
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -54,6 +55,15 @@ def tasks(request):
     }
 
     return render(request, 'tasks.html', context)
+
+def tasks_completed(request):
+    tasks = Task.objects.filter(user=request.user, date_completed__isnull=False).order_by('-date_completed')
+    context = {
+        'tasks': tasks
+    }
+
+    return render(request, 'tasks.html', context)
+
 
 def task_detail(request, task_id):
     if request.method == 'GET':
