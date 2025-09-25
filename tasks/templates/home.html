@@ -1,4 +1,5 @@
 {% extends 'base.html' %} 
+{% load static %} 
 {% block title %}Home - TaskManager{% endblock %}
 
 {% block content %}
@@ -8,24 +9,24 @@
             <h1 class="display-4 fw-bold text-primary mb-4">
                 <i class="fas fa-tasks me-3"></i>TaskManager
             </h1>
-            <p class="lead mb-4">Organiza tus tareas de manera eficiente y nunca olvides lo importante.</p>
+            <p class="lead mb-4">Organize your tasks efficiently and never forget what's important.</p>
             
             {% if user.is_authenticated %}
             <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
                 <a href="{% url 'tasks' %}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-list me-2"></i>Ver Mis Tareas
+                    <i class="fas fa-list me-2"></i>View My Tasks
                 </a>
                 <a href="{% url 'create_task' %}" class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-plus me-2"></i>Nueva Tarea
+                    <i class="fas fa-plus me-2"></i>New Task
                 </a>
             </div>
             {% else %}
             <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
                 <a href="/signup" class="btn btn-primary btn-lg">
-                    <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+                    <i class="fas fa-user-plus me-2"></i>Create Account
                 </a>
                 <a href="/signin" class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
                 </a>
             </div>
             {% endif %}
@@ -33,8 +34,7 @@
     </div>
     <div class="col-lg-6 mt-5 mt-lg-0">
         <div class="text-center">
-            <img src="https://cdn.pixabay.com/photo/2017/01/18/21/49/checklist-1991397_1280.png" 
-                 alt="Task Management" class="img-fluid rounded shadow" style="max-height: 400px;">
+            <img src="{% static 'admin/images/logo.png' %}" alt="Task Management" style="max-height: 400px;">
         </div>
     </div>
 </div>
@@ -44,24 +44,24 @@
     <div class="col-12">
         <div class="card shadow">
             <div class="card-body">
-                <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>Resumen Rápido</h3>
+                <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>Quick Summary</h3>
                 <div class="row text-center">
                     <div class="col-md-4">
                         <div class="p-3">
-                            <h4 class="text-primary">15</h4>
-                            <p class="text-muted">Tareas Pendientes</p>
+                            <h4 class="text-primary">{{tasks_pending}}</h4>
+                            <p class="text-muted">Pending Tasks</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3">
-                            <h4 class="text-success">8</h4>
-                            <p class="text-muted">Tareas Completadas</p>
+                            <h4 class="text-success">{{tasks_completed}}</h4>
+                            <p class="text-muted">Completed Tasks</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-3">
-                            <h4 class="text-warning">3</h4>
-                            <p class="text-muted">Tareas Importantes</p>
+                            <h4 class="text-warning">{{tasks_important}}</h4>
+                            <p class="text-muted">Important Tasks</p>
                         </div>
                     </div>
                 </div>
@@ -69,5 +69,82 @@
         </div>
     </div>
 </div>
+
+<div class="row mt-4">
+  <div class="col-lg-4 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3"><i class="fas fa-chart-pie me-2"></i>Completion Rate</h5>
+        <canvas id="chartCompletion"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3"><i class="fas fa-bullseye me-2"></i>Status Mix</h5>
+        <canvas id="chartStatus"></canvas>
+      </div>
+    </div>
+  </div>
+
+   <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="fas fa-star me-2"></i>Important vs Others</h5>
+                <canvas id="chartImportance"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Datos desde el contexto de Django (con valores por defecto)
+  const PENDING   = {{ tasks_pending|default:0 }};
+  const COMPLETED = {{ tasks_completed|default:0 }};
+  const IMPORTANT = {{ tasks_important|default:0 }};
+  const TOTAL     = PENDING + COMPLETED;
+  const NON_IMPORTANT = Math.max(TOTAL - IMPORTANT, 0);
+
+  // 1) Doughnut: Completed vs Pending (Completion rate)
+  new Chart(document.getElementById('chartCompletion'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Completed', 'Pending'],
+      datasets: [{ data: [COMPLETED, PENDING] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // 2) PolarArea: Status Mix (Pending / Completed / Important)
+  new Chart(document.getElementById('chartStatus'), {
+    type: 'polarArea',
+    data: {
+      labels: ['Pending', 'Completed', 'Important'],
+      datasets: [{ data: [PENDING, COMPLETED, IMPORTANT] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // 3) Bar: Important vs Others
+  new Chart(document.getElementById('chartImportance'), {
+    type: 'bar',
+    data: {
+      labels: ['Important', 'Others'],
+      datasets: [{ data: [IMPORTANT, NON_IMPORTANT] }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+</script>
+
 {% endif %}
 {% endblock %}

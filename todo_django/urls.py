@@ -16,10 +16,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.shortcuts import render
 from django.urls import path
 from tasks import views 
-from django.conf import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -29,21 +27,8 @@ urlpatterns = [
     path("tasks_completed/", views.tasks_completed, name="tasks_completed"),
     path("logout/", views.signout, name="logout"),
     path("signin/", views.signin, name="signin"),
-    path("create-task/", views.create_task, name="create_task"),
+    path("create-task/", views.create_task, name="create_task"),  # ✅ Con guión
     path("task/<int:task_id>/", views.task_detail, name="task_detail"),
     path("task/<int:task_id>/complete/", views.complete_task, name="complete_task"),
     path("task/<int:task_id>/delete/", views.delete_task, name="delete_task"),
 ]
-
-# URLs para probar páginas de error (solo en desarrollo)
-if settings.DEBUG:
-    urlpatterns += [
-        path('404-test/', lambda request: render(request, '404.html')),
-        path('500-test/', lambda request: render(request, '500.html')),
-        path('403-test/', lambda request: render(request, '403.html')),
-    ]
-
-# HANDLERS DE ERROR (DEBEN ESTAR AL FINAL DEL ARCHIVO)
-handler404 = 'tasks.views.custom_404'  # Asegúrate de que 'tasks' sea el nombre correcto de tu app
-handler500 = 'tasks.views.custom_500'
-handler403 = 'tasks.views.custom_403'

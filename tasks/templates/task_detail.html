@@ -12,7 +12,7 @@
                         {{ task.title }}
                     </h4>
                     <span class="badge bg-light text-dark">
-                        {% if task.datecompleted %}Completada{% else %}Pendiente{% endif %}
+                        {% if task.date_completed %}Completed{% else %}Pending{% endif %}
                     </span>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                 <div class="alert alert-danger">{{ error }}</div>
                 {% endif %}
 
-                <!-- Formulario de edición -->
+                <!-- Edit Form -->
                 <form method="POST" class="mb-4">
                     {% csrf_token %}
                     
@@ -41,32 +41,32 @@
                     
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="submit" class="btn btn-primary me-md-2">
-                            <i class="fas fa-save me-2"></i>Actualizar Tarea
+                            <i class="fas fa-save me-2"></i>Update Task
                         </button>
                         <a href="{% url 'tasks' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Volver
+                            <i class="fas fa-arrow-left me-2"></i>Back
                         </a>
                     </div>
                 </form>
 
                 <hr>
 
-                <!-- Acciones adicionales -->
+                <!-- Additional Actions -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                    {% if not task.datecompleted %}
+                    {% if not task.date_completed %}
                     <form action="{% url 'complete_task' task.id %}" method="POST" class="me-md-2">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i>Marcar como Completada
+                            <i class="fas fa-check-circle me-2"></i>Mark as Completed
                         </button>
                     </form>
                     {% endif %}
                     
                     <form action="{% url 'delete_task' task.id %}" method="POST" 
-                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta tarea?');">
+                          onsubmit="return confirm('Are you sure you want to delete this task?');">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash me-2"></i>Eliminar Tarea
+                            <i class="fas fa-trash me-2"></i>Delete Task
                         </button>
                     </form>
                 </div>
@@ -93,7 +93,7 @@
                 <input type="checkbox" name="${checkbox.name}" id="${checkbox.id}" 
                        class="form-check-input" role="switch" ${checkbox.checked ? 'checked' : ''}>
                 <label class="form-check-label fw-bold" for="${checkbox.id}">
-                    Tarea Importante
+                    Important Task
                 </label>
             `;
         }

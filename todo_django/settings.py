@@ -39,7 +39,46 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "tasks",
-]
+] 
+
+# ========== SIMPLEUI CONFIGURATION ==========
+# SIMPLEUI_CONFIG = {
+#     'system_keep': False,
+#     'menu_display': ['Tareas', 'Usuarios', 'Sitio'],
+#     'dynamic': True,
+#     'menus': [
+#         {
+#             'name': 'Tareas',
+#             'icon': 'fas fa-tasks',
+#             'models': [
+#                 {
+#                     'name': 'Ver Tareas',
+#                     'icon': 'fas fa-list',
+#                     'url': 'admin:tasks_task_changelist'
+#                 }
+#             ]
+#         }
+#     ]
+# }
+
+# Configuraciones PRINCIPALES de SimpleUI
+SIMPLEUI_LOGO = '/static/admin/images/logo.png'  # Usa URL temporal
+SIMPLEUI_SITE_TITLE = 'Task Manager Admin'
+SIMPLEUI_SITE_HEADER = 'Task Manager - Administración'  # ¡ESTO FALTA!
+SIMPLEUI_INDEX_TITLE = 'Panel de Control - Task Manager'
+SIMPLEUI_HOME_TITLE = 'Dashboard Principal'
+SIMPLEUI_HOME_ICON = 'fas fa-home'
+SIMPLEUI_ANALYSIS = False  # Desactiva analytics
+SIMPLEUI_HOME_INFO = False  # Oculta info
+SIMPLEUI_HOME_QUICK = True  # Accesos rápidos
+SIMPLEUI_HOME_ACTION = True  # Acciones rápidas
+
+# Configuración del admin de Django (como respaldo)
+from django.contrib.admin import AdminSite
+AdminSite.site_title = "Task Manager Admin"
+AdminSite.site_header = "Task Manager Administration"
+AdminSite.index_title = "Panel de Control"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -56,7 +95,7 @@ ROOT_URLCONF = "todo_django.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -116,11 +155,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 LOGIN_URL = '/signin'
+LOGIN_REDIRECT_URL = '/tasks/'
+LOGOUT_REDIRECT_URL = '/'
+
+ADMIN_LOGIN_URL = '/admin/login/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

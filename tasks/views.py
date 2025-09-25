@@ -12,7 +12,26 @@ from django.contrib.auth.decorators import login_required
 
 
 def home(request):
-    return render(request, 'home.html')
+    # Verificar si el usuario está autenticado
+    if request.user.is_authenticated:
+        # Solo filtrar por usuario si está autenticado
+        tasks = Task.objects.filter(user=request.user)
+        tasks_pending = tasks.filter(date_completed__isnull=True).count()
+        tasks_completed = tasks.filter(date_completed__isnull=False).count()
+        tasks_important = tasks.filter(important=True, date_completed__isnull=True).count()
+    else:
+        # Valores por defecto para usuarios no autenticados
+        tasks_pending = 0
+        tasks_completed = 0
+        tasks_important = 0
+    
+    context = {
+        'tasks_pending': tasks_pending,
+        'tasks_completed': tasks_completed,
+        'tasks_important': tasks_important
+    }
+
+    return render(request, 'home.html', context)
 
 
 def signup(request):
@@ -129,7 +148,7 @@ def signin(request):
             return render(request, 'signin.html', context)
         else:
             login(request, user)
-            return redirect('tasks')
+            return redirect('home')
 
 @login_required
 def create_task(request):
