@@ -1,26 +1,102 @@
 {% extends 'base.html' %}
+{% block title %}{{ task.title }} - TaskManager{% endblock %}
 
 {% block content %}
-<h1>{{task.title}}</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header {% if task.important %}bg-danger{% else %}bg-primary{% endif %} text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        {% if task.important %}<i class="fas fa-exclamation-circle me-2"></i>{% endif %}
+                        {{ task.title }}
+                    </h4>
+                    <span class="badge bg-light text-dark">
+                        {% if task.datecompleted %}Completada{% else %}Pendiente{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
 
-{{error}}
+                <!-- Formulario de edición -->
+                <form method="POST" class="mb-4">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="alert alert-danger mt-1">
+                            {{ field.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary me-md-2">
+                            <i class="fas fa-save me-2"></i>Actualizar Tarea
+                        </button>
+                        <a href="{% url 'tasks' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </form>
 
-<form method="POST">
-    {% csrf_token %}
-    {{form.as_p}}
-    <button>Save</button>
-</form>
+                <hr>
 
-<form action="{% url 'complete-task' task.id %}" method="POST">
-    {% csrf_token %}
-    <button>Complete</button>
-</form>
+                <!-- Acciones adicionales -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                    {% if not task.datecompleted %}
+                    <form action="{% url 'complete_task' task.id %}" method="POST" class="me-md-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle me-2"></i>Marcar como Completada
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    <form action="{% url 'delete_task' task.id %}" method="POST" 
+                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta tarea?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Eliminar Tarea
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-<form action="{% url 'delete-task' task.id %}" method="POST">
-    {% csrf_token %}
-    <button>Delete</button>
-</form>
-
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+        
+        // Estilo para checkbox
+        const checkbox = document.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            checkbox.classList.remove('form-control');
+            checkbox.classList.add('form-check-input');
+            const parent = checkbox.parentElement;
+            parent.classList.add('form-check', 'form-switch');
+            parent.innerHTML = `
+                <input type="checkbox" name="${checkbox.name}" id="${checkbox.id}" 
+                       class="form-check-input" role="switch" ${checkbox.checked ? 'checked' : ''}>
+                <label class="form-check-label fw-bold" for="${checkbox.id}">
+                    Tarea Importante
+                </label>
+            `;
+        }
+    });
+</script>
 {% endblock %}

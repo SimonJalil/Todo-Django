@@ -1,28 +1,63 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
+{% block title %}My Tasks - TaskManager{% endblock %}
 
 {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2"><i class="fas fa-list me-2"></i>Mis Tareas</h1>
+    <a href="{% url 'create_task' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Nueva Tarea
+    </a>
+</div>
 
-<h1>Tasks Pending</h1>
-
-<ul>
+{% if tasks %}
+<div class="row">
     {% for task in tasks %}
-    <li>
-        <a href="{% url 'task-detail' task.id %}">
-            {% if task.important %}
-            <strong>{{task.title}}</strong>
-            {% else %}
-            {{task.title}}
-            {% endif %}
-        </a>
-        <p>{{task.description}}</p>
-        <p>{{task.user.username}}</p>
-
-        <p>{{task.date_completed|date:'M j Y:i'}}</p>
-
-    </li>
-    {% empty %}
-    <li>No tasks available.</li>
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card task-card h-100 {% if task.important %}important-task{% endif %} {% if task.datecompleted %}completed-task{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title">
+                        <a href="{% url 'task_detail' task.id %}" class="text-decoration-none text-dark">
+                            {% if task.important %}
+                            <strong><i class="fas fa-exclamation-circle text-danger me-2"></i>{{ task.title }}</strong>
+                            {% else %}
+                            {{ task.title }}
+                            {% endif %}
+                        </a>
+                    </h5>
+                    <span class="badge {% if task.datecompleted %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if task.datecompleted %}Completada{% else %}Pendiente{% endif %}
+                    </span>
+                </div>
+                
+                <p class="card-text text-muted">{{ task.description|truncatewords:20 }}</p>
+                
+                {% if task.datecompleted %}
+                <p class="text-success small mb-2">
+                    <i class="fas fa-check-circle me-1"></i>
+                    Completada: {{ task.datecompleted|date:'M j Y' }}
+                </p>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">#{{ task.id }}</small>
+                    <a href="{% url 'task_detail' task.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i>Ver Detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endfor %}
-</ul>
-
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
+    <h3 class="text-muted">No hay tareas creadas</h3>
+    <p class="text-muted">Comienza creando tu primera tarea</p>
+    <a href="{% url 'create_task' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Crear Primera Tarea
+    </a>
+</div>
+{% endif %}
 {% endblock %}
