@@ -1,3 +1,5 @@
+settings_dev.py
+
 # Entornos virtuales de Python
 venv/
 env/
